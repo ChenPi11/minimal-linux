@@ -135,7 +135,7 @@ _makeimg_part_2 :
 	cd $(ROOTFS) && $(SUDO) cp -r * "$(PWD)/$(FS_DIR)"
 	$(SUDO) $(CHOWN) -R root:root $(FS_DIR)
 	$(SUDO) ls -R "$(FS_DIR)"
-	$(SUOD) $(UMOUNT) -R $(FS_DIR)
+	$(SUDO) $(UMOUNT) -R $(FS_DIR)
 	$(SUDO) $(KPARTX) -dv $(LOOP_DEVICE)
 	$(SUDO) $(LOSETUP) -d $(LOOP_DEVICE)
 	$(SUDO) $(RM) -r -f $(FS_DIR)
