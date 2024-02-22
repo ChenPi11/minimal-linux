@@ -1,0 +1,156 @@
+# Makefile for minimal-linux
+
+# Dependencies for building.
+CC := @CC@
+CHMOD := @CHMOD@
+CHOWN := @CHOWN@
+FDISK := @FDISK@
+GRUB_INSTALL := @GRUB_INSTALL@
+KPARTX := @KPARTX@
+LOSETUP := @LOSETUP@
+MKDIR := @MKDIR@
+MKEXT4 := @MKFS_EXT4@
+MKNOD := @MKNOD@
+MOUNT := @MOUNT@
+QEMU_IMG := @QEMU_IMG@
+RM := @RM@
+SUDO := @SUDO@
+TAR := @TAR@
+UMOUNT := @UMOUNT@
+WGET := @WGET@
+
+CREATE_IMAGE = $(QEMU_IMG) create -f raw $(IMAGE_FILE) $(IMAGE_SIZE)
+
+# Configuration.
+# We only support x86_64 for now.
+ARCH = x86_64
+BUSYBOX = busybox-@BUSYBOX_VERSION@
+BUSYBOX_CONFIG = busybox.config
+FDISK_INPUT_FILE = fdisk-input.txt
+FS_DIR = fs
+FSTAB = fstab
+GRUB_CONFIG = grub.cfg
+IMAGE_FILE = disk.img
+IMAGE_SIZE = 7.55M
+LINUX = linux-@LINUX_VERSION@
+LINUX_CONFIG = linux.config
+LINUX_VERSION_MAJOR = @LINUX_VERSION_MAJOR@
+ROOTFS = rootfs
+
+# Dependencies for testing.
+DU := du
+TREE := tree
+QEMU_SYSTEM := qemu-system-$(ARCH)
+
+# Mirrors.
+include mirrors.mk
+BUSYBOX_URL = $(BUSYBOX_MIRROR)/$(BUSYBOX).tar.bz2
+LINUX_URL = $(LINUX_MIRROR)/v$(LINUX_VERSION_MAJOR).x/$(LINUX).tar.xz
+
+# Bug fix
+PWD ?= $(shell pwd)
+
+ifneq (,)
+This makefile requires GNU Make.
+endif
+
+.PHONY : _makeimg_part_1 _makeimg_part_2 clean totally-clean check
+
+all : $(IMAGE_FILE)
+
+$(BUSYBOX).tar.bz2 :
+	$(WGET) "$(BUSYBOX_URL)" -O $@
+
+$(BUSYBOX) : $(BUSYBOX).tar.bz2
+	$(TAR) -xvf $^
+
+$(BUSYBOX)/busybox : $(BUSYBOX) $(BUSYBOX_CONFIG)
+	cp $(BUSYBOX_CONFIG) "$(BUSYBOX)/.config"
+	cd $(BUSYBOX) && $(MAKE) all CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
+
+$(LINUX).tar.xz :
+	$(WGET) "$(LINUX_URL)" -O $@
+
+$(LINUX) : $(LINUX).tar.xz
+	$(TAR) -xvf $^
+
+$(LINUX)/arch/$(ARCH)/boot/bzImage : $(LINUX) $(LINUX_CONFIG)
+	cp $(LINUX_CONFIG) "$(LINUX)/.config"
+	cd $(LINUX) && $(MAKE) all CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
+
+$(ROOTFS) : rcS $(BUSYBOX)/busybox $(LINUX)/arch/$(ARCH)/boot/bzImage
+	$(MKDIR) -p $(ROOTFS)
+
+	cd $(BUSYBOX) && $(SUDO) $(MAKE) install CONFIG_PREFIX="$(PWD)/$@"
+
+	cd $(ROOTFS) && $(SUDO) $(MKDIR) -p etc dev home root proc sys mnt boot
+
+	$(SUDO) cp "$(LINUX)/arch/$(ARCH)/boot/bzImage" "$(ROOTFS)/boot/vmlinuz"
+	$(SUDO) $(CHMOD) 0755 "$(ROOTFS)/boot/vmlinuz"
+
+	$(SUDO) $(RM) -f "$(ROOTFS)/dev/console"
+	$(SUDO) $(MKNOD) "$(ROOTFS)/dev/console" c 5 1
+	$(SUDO) $(RM) -f "$(ROOTFS)/dev/null"
+	$(SUDO) $(MKNOD) "$(ROOTFS)/dev/null" c 1 3
+	$(SUDO) $(RM) -f "$(ROOTFS)/dev/tty"
+	$(SUDO) $(MKNOD) "$(ROOTFS)/dev/tty" c 5 0
+	$(SUDO) $(RM) -f "$(ROOTFS)/dev/zero"
+	$(SUDO) $(MKNOD) "$(ROOTFS)/dev/zero" c 1 5
+	$(SUDO) $(RM) -f "$(ROOTFS)/dev/random"
+	$(SUDO) $(MKNOD) "$(ROOTFS)/dev/random" c 1 8
+	$(SUDO) $(RM) -f "$(ROOTFS)/dev/urandom"
+	$(SUDO) $(MKNOD) "$(ROOTFS)/dev/urandom" c 1 9
+	$(SUDO) $(RM) -f "$(ROOTFS)/dev/ptmx"
+	$(SUDO) $(MKNOD) "$(ROOTFS)/dev/ptmx" c 5 2
+	$(SUDO) $(RM) -f "$(ROOTFS)/dev/sda"
+	$(SUDO) $(MKNOD) "$(ROOTFS)/dev/sda" b 8 0
+	$(SUDO) $(RM) -f "$(ROOTFS)/dev/full"
+	$(SUDO) $(MKNOD) "$(ROOTFS)/dev/full" c 1 7
+
+	$(SUDO) $(MKDIR) -p "$(ROOTFS)/etc/init.d"
+
+	$(SUDO) cp -f rcS "$(ROOTFS)/etc/init.d/rcS"
+	$(SUDO) $(CHMOD) 0755 "$(ROOTFS)/etc/init.d/rcS"
+	$(SUDO) cp -f $(FSTAB) "$(ROOTFS)/etc/fstab"
+	$(SUDO) $(CHMOD) 0644 "$(ROOTFS)/etc/fstab"
+
+	$(SUDO) $(CHOWN) -R root:root $(ROOTFS)
+
+$(IMAGE_FILE) : $(ROOTFS) $(FDISK_INPUT_FILE)
+	$(SUDO) $(CREATE_IMAGE)
+	$(SUDO) $(FDISK) $(IMAGE_FILE) < $(FDISK_INPUT_FILE)
+	$(MAKE) _makeimg_part_1 LOOP_DEVICE="$$($(SUDO) $(LOSETUP) -f --show $(IMAGE_FILE))"
+_makeimg_part_1 :
+	@echo "$(LOOP_DEVICE)"
+	$(MAKE) _makeimg_part_2 MAPPER_DEVICE="/dev/mapper/$$($(SUDO) $(KPARTX) -av $(LOOP_DEVICE) | awk '{print $$3}')"
+_makeimg_part_2 :
+	@echo "$(MAPPER_DEVICE)"
+	$(SUDO) $(MKEXT4) $(MAPPER_DEVICE)
+
+	$(SUDO) $(MKDIR) -p $(FS_DIR)
+	$(SUDO) $(MOUNT) $(MAPPER_DEVICE) $(FS_DIR)
+	$(SUDO) $(GRUB_INSTALL) --root-directory="$(PWD)/$(FS_DIR)" $(IMAGE_FILE) --compress=xz --locales= --themes= --install-modules="normal part_msdos ext2 linux"
+	$(SUDO) cp -f $(GRUB_CONFIG) "$(FS_DIR)/boot/grub/grub.cfg"
+
+	cd $(ROOTFS) && $(SUDO) cp -r * "$(PWD)/$(FS_DIR)"
+	$(SUDO) $(CHOWN) -R root:root $(FS_DIR)
+	$(SUDO) ls -R "$(FS_DIR)"
+	$(SUOD) $(UMOUNT) -R $(FS_DIR)
+	$(SUDO) $(KPARTX) -dv $(LOOP_DEVICE)
+	$(SUDO) $(LOSETUP) -d $(LOOP_DEVICE)
+	$(SUDO) $(RM) -r -f $(FS_DIR)
+
+clean :
+	$(RM) -r -f $(BUSYBOX)
+	$(RM) -r -f $(ROOTFS)
+	$(RM) -f $(IMAGE_FILE)
+
+totally-clean : clean
+	$(RM) -f $(BUSYBOX).tar.bz2
+
+check : all
+	@echo "BUSYBOX: $(BUSYBOX)"
+	@echo "APPLETS:"
+	./$(ROOTFS)/bin/busybox --list
+	$(DU) -sh "$(ROOTFS)"
+	$(QEMU_SYSTEM) -hda $(IMAGE_FILE) -m 512M $(QEMU_ARGS)

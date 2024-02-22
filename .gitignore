@@ -1,0 +1,16 @@
+busybox-*
+linux-*
+rootfs
+fs
+*.bz2
+*.xz
+*.img
+*.log
+autom4te.cache
+aclocal.m4
+configure
+configure~
+config.status
+Makefile
+mirrors.mk
+minimal-linux-*

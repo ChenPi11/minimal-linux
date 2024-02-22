@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Mount all mount points in fstab
+mount -a

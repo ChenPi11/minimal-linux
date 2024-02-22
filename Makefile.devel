@@ -1,0 +1,59 @@
+# -*- makefile -*-
+# This is the developer's makefile, not the user's makefile.
+# Don't use it unless you know exactly what you do!
+
+ACLOCAL := aclocal
+AUTOCONF := autoconf
+MKDIR := mkdir
+RM := rm -f
+TAR := tar
+XZ := xz
+
+ACLOCAL_FILE = aclocal.m4
+CONFIGURE = configure
+CONFIGURE_IN = configure.ac
+VERSION = 0.1.0
+
+.PHONY : all check-configures check dist
+
+all : configure
+
+$(ACLOCAL_FILE) : $(CONFIGURE_IN) $(wildcard m4/*.m4)
+	$(ACLOCAL) -I m4 --output=$@ && touch $@ && $(RM) -r -f autom4te.cache
+
+AUTOCONF_FILES = $(ACLOCAL_FILE) $(wildcard m4/*.m4)
+
+$(CONFIGURE) : $(CONFIGURE_IN) $(AUTOCONF_FILES)
+	$(AUTOCONF) && $(RM) -r -f autom4te.cache
+
+check-configures : $(CONFIGURE)
+	set -e; for f in $(CONFIGURE); do bash -x -n $$f; done
+
+check : all check-configures
+	./$(CONFIGURE) --with-linux-mirror=TSINGHUA
+	$(MAKE) all -j$$(nproc)
+	$(MAKE) check
+
+# Make a distribution tarball
+
+CONFIG_FILES = busybox.config grub.cfg linux.config
+
+DOC_FILES = LICENSE README.md
+
+MAKE_FILES = m4 aclocal.m4 configure.ac configure Makefile.devel Makefile.in mirrors.mk.in
+
+SOURCE_FILES = fdisk-input.txt fstab rcS
+
+DIST_FILELIST = $(CONFIG_FILES) $(DOC_FILES) $(MAKE_FILES) $(SOURCE_FILES)
+
+dist : all
+	$(RM) -r -f minimal-linux-$(VERSION)
+	$(MKDIR) -p minimal-linux-$(VERSION)
+	cp -r $(DIST_FILELIST) minimal-linux-$(VERSION)
+	$(TAR) -cvf minimal-linux-$(VERSION).tar minimal-linux-$(VERSION)
+	$(XZ) -9 minimal-linux-$(VERSION).tar
+	$(RM) -r -f minimal-linux-$(VERSION).tar
+
+clean :
+	if test -f Makefile; then $(MAKE) totally-clean; fi
+	$(RM) -r -f *.tar *.xz minimal-linux-$(VERSION) $(ACLOCAL_FILE) $(CONFIGURE) autom4te.cache config.log config.status configure fs Makefile mirrors.mk
