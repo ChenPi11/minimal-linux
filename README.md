@@ -186,8 +186,8 @@ see file [LICENSE](./LICENSE).
 
 ## Download
 
-<https://github.com/ChenPi11/MinimalLinux/releases>
+<https://github.com/ChenPi11/miminal-linux/releases>
 
 ## Homepage
 
-<https://github.com/ChenPi11/MinimalLinux>
+<https://github.com/ChenPi11/miminal-linux>

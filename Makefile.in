@@ -142,15 +142,17 @@ _makeimg_part_2 :
 
 clean :
 	$(RM) -r -f $(BUSYBOX)
+	$(RM) -r -f $(LINUX)
 	$(RM) -r -f $(ROOTFS)
 	$(RM) -f $(IMAGE_FILE)
 
 totally-clean : clean
 	$(RM) -f $(BUSYBOX).tar.bz2
+	$(RM) -f $(LINUX).tar.xz
 
 check : all
 	@echo "BUSYBOX: $(BUSYBOX)"
 	@echo "APPLETS:"
 	./$(ROOTFS)/bin/busybox --list
-	$(DU) -sh "$(ROOTFS)"
-	$(QEMU_SYSTEM) -hda $(IMAGE_FILE) -m 512M $(QEMU_ARGS)
+	$(SUDO) $(DU) -sh "$(ROOTFS)"
+	$(SUDO) $(QEMU_SYSTEM) -hda $(IMAGE_FILE) -m 512M $(QEMU_ARGS)
