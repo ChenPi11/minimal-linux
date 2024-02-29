@@ -6,3 +6,5 @@
 #
 # <file system> <mount point>   <type>  <options>       <dump>  <pass>
 /dev/sda1 	/         	ext4      	rw,relatime	0 1
+proc     	/proc     	proc      	defaults  	0 0
+sysfs    	/sys      	sysfs     	defaults  	0 0

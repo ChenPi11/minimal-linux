@@ -2,3 +2,4 @@
 
 # Mount all mount points in fstab
 mount -a
+mount -o remount,rw /
