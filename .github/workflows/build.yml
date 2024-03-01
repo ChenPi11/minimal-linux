@@ -21,12 +21,6 @@ jobs:
         echo "tag=$tag" >> $GITHUB_ENV
         echo "pkgname=minimal-linux-$tag" >> $GITHUB_ENV
         echo "srcdir=$(pwd)" >> $GITHUB_ENV
-
-    - name: Collect dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install gcc xz-utils gawk grub2 make grep kpartx qemu-utils sed util-linux wget -y
-        sudo apt-get install binutils libelf-dev libssl-dev bc flex bison -y
         
     #--------------------------------------------build--------------------------------------------
     - name: Build tarball
@@ -70,6 +64,11 @@ jobs:
         sudo apt-get install gcc xz-utils gawk grub2 make grep kpartx qemu-utils sed util-linux wget -y
         sudo apt-get install binutils libelf-dev libssl-dev bc flex bison -y
     
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11.4
+
     - name: Get source distribution tarball
       run: |
         sudo wget https://github.com/${{ github.repository }}/releases/download/${{ env.tag }}/${{ env.pkgname }}.tar.xz
@@ -81,11 +80,10 @@ jobs:
     - name: Build binary distribution
       run: |
         sudo ./configure
-        sudo make all -j$(nproc)
+        sudo make graphic -j$(nproc)
     
     - name: Make packages
       run: |
-        sudo xz -9 disk.img
         sudo sha256sum disk.img.xz > disk.img.xz.sha256
     
     #--------------------------------------------publish--------------------------------------------
@@ -97,3 +95,4 @@ jobs:
         files: |
           disk.img.xz
           disk.img.xz.sha256
+          *.png

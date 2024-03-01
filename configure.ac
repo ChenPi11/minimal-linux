@@ -68,8 +68,33 @@ LINUX_VERSION_MAJOR=$(echo $LINUX_VERSION | cut -d. -f1)
 AC_SUBST([LINUX_VERSION])
 AC_SUBST([LINUX_VERSION_MAJOR])
 
+dnl Use '[[', ']]' instead of '[', ']' to avoid Autoconf interpreting.
+BUSYBOX_MIRROR=$(echo "$BUSYBOX_MIRROR" | tr "[[:lower:]]" "[[:upper:]]")
+BUSYBOX_MIRROR_CUSTOME=
+if test "$BUSYBOX_MIRROR" != "OFFICIAL"; then
+    BUSYBOX_MIRROR_CUSTOME=$BUSYBOX_MIRROR
+    BUSYBOX_MIRROR=CUSTOME
+fi
+AC_SUBST([BUSYBOX_MIRROR])
+AC_SUBST([BUSYBOX_MIRROR_CUSTOME])
+
+AC_ARG_WITH([linux-mirror],
+    [AS_HELP_STRING([--with-linux-mirror=OFFICIAL | CDN | TSINGHUA | ALIYUN | USTC | <URL>],
+        [define the mirror of Linux kernel])],
+    [LINUX_MIRROR=$withval],
+    [LINUX_MIRROR=OFFICIAL]
+)
+LINUX_MIRROR=$(echo "$LINUX_MIRROR" | tr "[[:lower:]]" "[[:upper:]]")
+LINUX_MIRROR_CUSTOME=
+if test "$LINUX_MIRROR" != "OFFICIAL" -a "$LINUX_MIRROR" != "CDN" -a "$LINUX_MIRROR" != "TSINGHUA" -a "$LINUX_MIRROR" != "ALIYUN" -a "$LINUX_MIRROR" != "USTC"; then
+    LINUX_MIRROR_CUSTOME=$LINUX_MIRROR
+    LINUX_MIRROR=CUSTOME
+fi
+AC_SUBST([LINUX_MIRROR])
+AC_SUBST([LINUX_MIRROR_CUSTOME])
+
 AC_ARG_WITH([busybox-mirror],
-    [AS_HELP_STRING([--with-busybox-mirror={OFFICIAL | <URL>}],
+    [AS_HELP_STRING([--with-busybox-mirror=OFFICIAL | <URL>],
         [define the mirror of BusyBox])],
     [BUSYBOX_MIRROR=$withval],
     [BUSYBOX_MIRROR=OFFICIAL]
@@ -89,31 +114,6 @@ if test "$GEN_GRAPHIC" = "yes"; then
 fi
 AC_SUBST([GEN_GRAPHIC])
 AC_SUBST([PYTHON])
-
-dnl Use '[[', ']]' instead of '[', ']' to avoid Autoconf interpreting.
-BUSYBOX_MIRROR=$(echo "$BUSYBOX_MIRROR" | tr "[[:lower:]]" "[[:upper:]]")
-BUSYBOX_MIRROR_CUSTOME=
-if test "$BUSYBOX_MIRROR" != "OFFICIAL"; then
-    BUSYBOX_MIRROR_CUSTOME=$BUSYBOX_MIRROR
-    BUSYBOX_MIRROR=CUSTOME
-fi
-AC_SUBST([BUSYBOX_MIRROR])
-AC_SUBST([BUSYBOX_MIRROR_CUSTOME])
-
-AC_ARG_WITH([linux-mirror],
-    [AS_HELP_STRING([--with-linux-mirror={OFFICIAL | CDN | TSINGHUA | ALIYUN | USTC | <URL>}],
-        [define the mirror of Linux kernel])],
-    [LINUX_MIRROR=$withval],
-    [LINUX_MIRROR=OFFICIAL]
-)
-LINUX_MIRROR=$(echo "$LINUX_MIRROR" | tr "[[:lower:]]" "[[:upper:]]")
-LINUX_MIRROR_CUSTOME=
-if test "$LINUX_MIRROR" != "OFFICIAL" -a "$LINUX_MIRROR" != "CDN" -a "$LINUX_MIRROR" != "TSINGHUA" -a "$LINUX_MIRROR" != "ALIYUN" -a "$LINUX_MIRROR" != "USTC"; then
-    LINUX_MIRROR_CUSTOME=$LINUX_MIRROR
-    LINUX_MIRROR=CUSTOME
-fi
-AC_SUBST([LINUX_MIRROR])
-AC_SUBST([LINUX_MIRROR_CUSTOME])
 
 dnl           checks for build configuration
 

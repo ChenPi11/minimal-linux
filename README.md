@@ -6,7 +6,7 @@
 
 - A C runtime, compiler, linker, etc.
   - Mandatory.
-  - Either the platform's native 'cc', or GCC 4.2 or newer.
+  - Either the platform's native 'cc', or GCC 4.2 or newer. For building BusyBox and Linux.
   - GCC Homepage:
     <https://gcc.gnu.org>
   - Download:
@@ -14,7 +14,7 @@
 
 - A shell
   - Mandatory.
-  - Either the platform's native 'sh', or Bash.
+  - Either the platform's native 'sh', or GNU Bash.
   - Homepage:
     <https://www.gnu.org/software/bash>
   - Download:
@@ -28,12 +28,7 @@
   - Download:
     <https://ftp.gnu.org/gnu/gawk>
 
-- Core POSIX utilities, including:
-
-    ```text
-    [ cat cut chmod chown cp dd echo ln ls mkdir mknod mv pwd rm tr
-    ```
-
+- Core POSIX utilities.
   - Mandatory.
   - Either the platform's native utilities, or GNU coreutils.
   - Homepage:
@@ -43,7 +38,7 @@
 
 - GNU Grub
   - Mandatory.
-  - GNU Grub 2.x
+  - GNU Grub 2.x. For install grub in the image file.
   - Homepage:
     <https://www.gnu.org/software/grub>
   - Download:
@@ -67,6 +62,7 @@
 
 - Kpartx
   - Mandatory.
+  - For mounting filesystem.
   - Homepage:
     <http://christophe.varoqui.free.fr>
 
@@ -102,11 +98,21 @@
 
 - Wget
   - Mandatory.
-  - Either the platform's native 'wget', or GNU Wget.
+  - Either the platform's native 'wget', or GNU Wget. For get source codes.
   - GNU Wget Homepage:
     <https://www.gnu.org/software/wget>
   - Download:
     <https://ftp.gnu.org/gnu/wget>
+
+### For generating graphic
+
+- Python
+  - Mandatory.
+  - For `make graphic` command.
+  - Homepage:
+    <https://python.org>
+  - Download:
+    <https://python.org/ftp/python>
 
 ### For testing
 
@@ -145,21 +151,25 @@ The disk image will be name to `disk.img`.
 
 ## Configure parameters
 
-- `--with-busybox-version=[X.X.X]`
+- `--with-busybox-version=X.X.X`
   - Specify the version of Busybox.
   - Default is `1.36.1`.
 
-- `--with-linux-version=[X.X.X]`
+- `--with-linux-version=X.X.X`
   - Specify the version of Linux kernel.
   - Default is `6.7.5`.
 
-- `--with-busybox-mirror={OFFICIAL | <URL>}`
+- `--with-busybox-mirror=OFFICIAL | <URL>`
   - Specify the mirror of Busybox. If you want to use the official mirror, set it to `OFFICIAL`. Otherwise, set it to the URL of the mirror.
   - Default is `OFFICIAL`.
 
-- `--with-linux-mirror={OFFICIAL | CDN | TSINGHUA | ALIYUN | USTC | <URL>}`
+- `--with-linux-mirror=OFFICIAL | CDN | TSINGHUA | ALIYUN | USTC | <URL>`
   - Specify the mirror of Linux kernel. If you want to use the Tsinghua mirror, set it to `TSINGHUA`. Otherwise, set it to the URL of the mirror.
   - Default is `OFFICIAL`.
+
+- `--with-graphic=yes | no`
+  - Enable generate graphic image of MinimalLinux. This picture can be unpacked by `loadgraphic.py`.
+  - Default is `yes`
 
 Like this:
 
