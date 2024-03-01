@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-"""Load Data Graphic"""
+"""Load Data Picture"""
 
 # Format:
 # 1: X ((0, 0, 0) or (255, 255, 255))  ---- File head. (0, 0, 0) for 2-colors
-#   graphic, (255, 255, 255) for 256-colors graphic.
+#   picture, (255, 255, 255) for 256-colors picture.
 # 2: GREET_MSG                         ---- Greet message. Ends with \x00.
 # 3: FILE_NAME                         ---- File name. Ends with \x00.
 # 4: FILE_PERM                         ---- File permission. (6 bytes)
@@ -58,10 +58,10 @@ def read_until_null(fp: io.BytesIO, output: bool = False) -> str:
 
 
 def load_raw_io_2colors(filepath: Path) -> io.BytesIO:
-    """Return a IO buffer that contains file data by 2-colors graphic.
+    """Return a IO buffer that contains file data by 2-colors picture.
 
     Args:
-        filepath (Path): The graphic file path.
+        filepath (Path): The picture file path.
 
     Returns:
         io.BytesIO: A IO buffer that contains all data. Include file name,
@@ -98,10 +98,10 @@ def load_raw_io_2colors(filepath: Path) -> io.BytesIO:
 
 
 def load_raw_io_256colors(filepath: Path) -> io.BytesIO:
-    """Return a IO buffer that contains file data by 256-colors graphic.
+    """Return a IO buffer that contains file data by 256-colors picture.
 
     Args:
-        filepath (Path): The graphic file path.
+        filepath (Path): The picture file path.
 
     Returns:
         io.BytesIO: A IO buffer that contains all data. Include file name,
@@ -127,14 +127,14 @@ def load_raw_io_256colors(filepath: Path) -> io.BytesIO:
     return io.BytesIO(bytes(raw_data))
 
 
-def is_256colors_graphic(imgpath: Path) -> bool:
-    """Check if the graphic file is 256-colors.
+def is_256colors_picture(imgpath: Path) -> bool:
+    """Check if the picture file is 256-colors.
 
     Args:
-        imgpath (Path): The graphic file path.
+        imgpath (Path): The picture file path.
 
     Returns:
-        bool: True if the graphic file is 256-colors.
+        bool: True if the picture file is 256-colors.
     """
 
     with PIL.Image.open(imgpath) as img:
@@ -144,19 +144,19 @@ def is_256colors_graphic(imgpath: Path) -> bool:
         return pixel == (255, 255, 255)
 
 
-def unpack_graphic(imgpath: Path) -> None:
-    """Unpack the graphic file.
+def unpack_picture(imgpath: Path) -> None:
+    """Unpack the picture file.
 
     Args:
-        imgpath (Path): The graphic file path.
+        imgpath (Path): The picture file path.
     """
 
     raw_io: io.BytesIO
-    if is_256colors_graphic(imgpath):
-        print("Loading the graphic file as 256-colors ...")
+    if is_256colors_picture(imgpath):
+        print("Loading the picture file as 256-colors ...")
         raw_io = load_raw_io_256colors(imgpath)
     else:
-        print("Loading the graphic file as 2-colors ...")
+        print("Loading the picture file as 2-colors ...")
         raw_io = load_raw_io_2colors(imgpath)
     print("=" * 20, flush=True)
     read_until_null(raw_io, True)
@@ -183,6 +183,6 @@ if __name__ == "__main__":
     # Set locale to the user's default setting.
     locale.setlocale(locale.LC_ALL, locale.setlocale(locale.LC_ALL, ""))
     if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <graphic file>")
+        print(f"Usage: {sys.argv[0]} <picture file>")
         sys.exit(1)
-    unpack_graphic(Path(sys.argv[1]))
+    unpack_picture(Path(sys.argv[1]))

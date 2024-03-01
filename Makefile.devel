@@ -31,7 +31,7 @@ check-configures : $(CONFIGURE)
 
 check : all check-configures
 	./$(CONFIGURE) --with-linux-mirror=TSINGHUA
-	$(MAKE) all
+	$(MAKE) picture
 	$(MAKE) check
 
 # Make a distribution tarball

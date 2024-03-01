@@ -150,11 +150,11 @@
 sudo apt-get update && sudo apt-get install gcc xz-utils gawk grub2 make grep kpartx qemu-utils sed util-linux wget binutils libelf-dev libssl-dev bc flex bison -y
 ```
 
-### For generating graphic
+### For generating picture
 
 - Python
   - Mandatory.
-  - For `make graphic` command.
+  - For `make picture` command.
   - Homepage:
     <https://python.org>
   - Download:
@@ -162,13 +162,13 @@ sudo apt-get update && sudo apt-get install gcc xz-utils gawk grub2 make grep kp
 
 - Python Pillow
   - Mandatory.
-  - For `make graphic` command.
+  - For `make picture` command.
   - Homepage:
     <https://python-pillow.org>
   - Download:
     <https://pypi.org/project/pillow/#files>
 
-#### Install graphic-generating dependencies Debian
+#### Install picture-generating dependencies Debian
 
 ```shell
 sudo apt-get update && sudo apt-get install python3 python3-pillow -y
@@ -231,8 +231,8 @@ The disk image will be name to `disk.img`.
   - Specify the mirror of Linux kernel. If you want to use the Tsinghua mirror, set it to `TSINGHUA`. Otherwise, set it to the URL of the mirror.
   - Default is `OFFICIAL`.
 
-- `--with-graphic=yes | no`
-  - Enable generate graphic image of MinimalLinux. This picture can be unpacked by `loadgraphic.py`.
+- `--with-picture=yes | no`
+  - Enable generate picture image of MinimalLinux. This picture can be unpacked by `loadpicture.py`.
   - Default is `yes`
 
 Like this:

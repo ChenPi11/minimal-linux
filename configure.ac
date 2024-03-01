@@ -100,19 +100,19 @@ AC_ARG_WITH([busybox-mirror],
     [BUSYBOX_MIRROR=OFFICIAL]
 )
 
-AC_ARG_WITH([graphic],
-    [AS_HELP_STRING([--with-graphic],
-        [enable generate graphic image of MinimalLinux])],
-    [GEN_GRAPHIC=$withval],
-    [GEN_GRAPHIC=yes]
+AC_ARG_WITH([picture],
+    [AS_HELP_STRING([--with-picture],
+        [enable generate picture image of MinimalLinux])],
+    [GEN_PICTURE=$withval],
+    [GEN_PICTURE=yes]
 )
-if test "$GEN_GRAPHIC" = "yes"; then
+if test "$GEN_PICTURE" = "yes"; then
     AC_PATH_PROG([PYTHON], [python])
     if test -z "$PYTHON"; then
         AC_PATH_PROG([PYTHON], [python3])
     fi
 fi
-AC_SUBST([GEN_GRAPHIC])
+AC_SUBST([GEN_PICTURE])
 AC_SUBST([PYTHON])
 
 dnl           checks for build configuration

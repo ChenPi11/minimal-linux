@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-"""Generate Data Graphic"""
+"""Generate Data Picture"""
 
 # Format:
 # 1: X ((0, 0, 0) or (255, 255, 255))  ---- File head. (0, 0, 0) for 2-colors
-#   graphic, (255, 255, 255) for 256-colors graphic.
+#   picture, (255, 255, 255) for 256-colors picture.
 # 2: GREET_MSG                         ---- Greet message. Ends with \x00.
 # 3: FILE_NAME                         ---- File name. Ends with \x00.
 # 4: FILE_PERM                         ---- File permission. (6 bytes)
@@ -19,9 +19,7 @@ import sys
 import locale
 import PIL.Image
 
-COMPRESSED_IMG_FILE = "disk.img.xz"
-
-GREET_MSG_2COLORS = """This is a 2-colors graphic.
+GREET_MSG_2COLORS = """This is a 2-colors picture.
 You should read it from top to bottom, left to right.
 The black pixel is 0, and the white pixel is 1.
 The first data is the greet message, followed by a null byte.
@@ -30,7 +28,7 @@ Then, the file permission is added in little-endian format. (6 bytes)
 After that, the file size is added in little-endian format. (6 bytes)
 Finally, the file data is added."""
 
-GREET_MSG_256COLORS = """This is a 256-colors graphic.
+GREET_MSG_256COLORS = """This is a 256-colors picture.
 You should read it from top to bottom, left to right.
 A pixel is represented by 3 bytes. (R=byte0, G=byte1, B=byte2)
 The next 3 bytes represent the RGB color of the second pixel, and so on.
@@ -91,10 +89,10 @@ def get_data_io(
         )
 
 
-def gen_2_colors_graphic(
+def gen_2_colors_picture(
     fp: io.BytesIO, width: int, height: int
 ) -> PIL.Image.Image:  # noqa: E501
-    """Generate 2 colors graphic.
+    """Generate 2 colors picture.
 
     Args:
         fp (io.BytesIO): Input data buffer.
@@ -129,10 +127,10 @@ def gen_2_colors_graphic(
     return img
 
 
-def gen_256_colors_graphic(
+def gen_256_colors_picture(
     fp: io.BytesIO, width: int, height: int
 ) -> PIL.Image.Image:  # noqa: E501
-    """Generate 256 colors graphic.
+    """Generate 256 colors picture.
 
     Args:
         fp (io.BytesIO): Input data buffer.
@@ -172,26 +170,26 @@ if __name__ == "__main__":
 
     source_file = Path(sys.argv[1])
 
-    # Generate 2 colors graphic
+    # Generate 2 colors picture
     data_io, file_size = get_data_io(
         source_file,
         GREET_MSG_2COLORS,
     )
-    graphic_width = math.ceil(math.sqrt(file_size * 8))
-    graphic_height = graphic_width
-    print(f"Generating 2 colors graphic: {graphic_width}x{graphic_height}")
-    graphic = gen_2_colors_graphic(data_io, graphic_width, graphic_height)
-    graphic.save(f"{source_file.name}-2colors.png")
+    picture_width = math.ceil(math.sqrt(file_size * 8))
+    picture_height = picture_width
+    print(f"Generating 2 colors picture: {picture_width}x{picture_height}")
+    picture = gen_2_colors_picture(data_io, picture_width, picture_height)
+    picture.save(f"{source_file.name}-2colors.png")
     print(f"Saved to {source_file.name}-2colors.png")
 
-    # Generate 256 colors graphic
+    # Generate 256 colors picture
     data_io, file_size = get_data_io(
         source_file,
         GREET_MSG_256COLORS,
     )
-    graphic_width = math.ceil(math.sqrt(file_size / 3))
-    graphic_height = graphic_width
-    print(f"Generating 256 colors graphic: {graphic_width}x{graphic_height}")
-    graphic = gen_256_colors_graphic(data_io, graphic_width, graphic_height)
-    graphic.save(f"{source_file.name}-256colors.png")
+    picture_width = math.ceil(math.sqrt(file_size / 3))
+    picture_height = picture_width
+    print(f"Generating 256 colors picture: {picture_width}x{picture_height}")
+    picture = gen_256_colors_picture(data_io, picture_width, picture_height)
+    picture.save(f"{source_file.name}-256colors.png")
     print(f"Saved to {source_file.name}-256colors.png")

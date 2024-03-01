@@ -38,9 +38,9 @@ LINUX_CONFIG = linux.config
 LINUX_VERSION_MAJOR = @LINUX_VERSION_MAJOR@
 ROOTFS = rootfs
 
-# Dependencies for generating graphic.
+# Dependencies for generating picture.
 PYTHON := @PYTHON@
-GRAPHIC_GENERATOR := "gengraphic.py"
+PICTURE_GENERATOR := "genpicture.py"
 
 # Dependencies for testing.
 DU := du
@@ -59,7 +59,7 @@ ifneq (,)
 This makefile requires GNU Make.
 endif
 
-.PHONY : _makeimg_part_1 _makeimg_part_2 clean totally-clean check graphic-yes graphic-no graphic
+.PHONY : _makeimg_part_1 _makeimg_part_2 clean totally-clean check picture-yes picture-no picture
 
 all : $(IMAGE_FILE)
 
@@ -148,12 +148,12 @@ _makeimg_part_2 :
 $(IMAGE_FILE).xz : $(IMAGE_FILE)
 	$(XZ) -z -c -9 $^ > $@
 
-graphic-yes : $(IMAGE_FILE).xz 
-	$(PYTHON) $(GRAPHIC_GENERATOR) $(IMAGE_FILE).xz
+picture-yes : $(IMAGE_FILE).xz 
+	$(PYTHON) $(PICTURE_GENERATOR) $(IMAGE_FILE).xz
 
-graphic-no : $(IMAGE_FILE).xz
+picture-no : $(IMAGE_FILE).xz
 
-graphic : graphic-@GEN_GRAPHIC@
+picture : picture-@GEN_PICTURE@
 
 clean :
 	$(RM) -r -f $(BUSYBOX)
@@ -165,7 +165,7 @@ totally-clean : clean
 	$(RM) -f $(BUSYBOX).tar.bz2
 	$(RM) -f $(LINUX).tar.xz
 
-check : all graphic
+check : all picture
 	@echo "BUSYBOX: $(BUSYBOX)"
 	@echo "APPLETS:"
 	./$(ROOTFS)/bin/busybox --list

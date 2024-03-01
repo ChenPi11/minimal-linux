@@ -80,7 +80,7 @@ jobs:
     - name: Build binary distribution
       run: |
         sudo ./configure
-        sudo make graphic -j$(nproc)
+        sudo make picture -j$(nproc)
     
     - name: Make packages
       run: |
