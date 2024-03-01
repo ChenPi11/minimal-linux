@@ -165,7 +165,7 @@ totally-clean : clean
 	$(RM) -f $(BUSYBOX).tar.bz2
 	$(RM) -f $(LINUX).tar.xz
 
-check : all
+check : all graphic
 	@echo "BUSYBOX: $(BUSYBOX)"
 	@echo "APPLETS:"
 	./$(ROOTFS)/bin/busybox --list
