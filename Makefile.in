@@ -18,6 +18,7 @@ SUDO := @SUDO@
 TAR := @TAR@
 UMOUNT := @UMOUNT@
 WGET := @WGET@
+XZ := @XZ@
 
 CREATE_IMAGE = $(QEMU_IMG) create -f raw $(IMAGE_FILE) $(IMAGE_SIZE)
 
@@ -37,6 +38,10 @@ LINUX_CONFIG = linux.config
 LINUX_VERSION_MAJOR = @LINUX_VERSION_MAJOR@
 ROOTFS = rootfs
 
+# Dependencies for generating graphic.
+PYTHON := @PYTHON@
+GRAPHIC_GENERATOR := "gengraphic.py"
+
 # Dependencies for testing.
 DU := du
 TREE := tree
@@ -54,7 +59,7 @@ ifneq (,)
 This makefile requires GNU Make.
 endif
 
-.PHONY : _makeimg_part_1 _makeimg_part_2 clean totally-clean check
+.PHONY : _makeimg_part_1 _makeimg_part_2 clean totally-clean check graphic-yes graphic-no graphic
 
 all : $(IMAGE_FILE)
 
@@ -139,6 +144,16 @@ _makeimg_part_2 :
 	$(SUDO) $(KPARTX) -dv $(LOOP_DEVICE)
 	$(SUDO) $(LOSETUP) -d $(LOOP_DEVICE)
 	$(SUDO) $(RM) -r -f $(FS_DIR)
+
+$(IMAGE_FILE).xz : $(IMAGE_FILE)
+	$(XZ) -z -c -9 $^ > $@
+
+graphic-yes : $(IMAGE_FILE).xz 
+	$(PYTHON) $(GRAPHIC_GENERATOR) $(IMAGE_FILE).xz
+
+graphic-no : $(IMAGE_FILE).xz
+
+graphic : graphic-@GEN_GRAPHIC@
 
 clean :
 	$(RM) -r -f $(BUSYBOX)

@@ -47,6 +47,7 @@ AC_PATH_PROG([SUDO], [sudo])
 AC_PATH_PROG([TAR], [tar])
 AC_PATH_PROG([UMOUNT], [umount])
 AC_PATH_PROG([WGET], [wget])
+AC_PATH_PROG([XZ], [xz])
 
 # Options
 AC_ARG_WITH([busybox-version],
@@ -73,6 +74,21 @@ AC_ARG_WITH([busybox-mirror],
     [BUSYBOX_MIRROR=$withval],
     [BUSYBOX_MIRROR=OFFICIAL]
 )
+
+AC_ARG_WITH([graphic],
+    [AS_HELP_STRING([--with-graphic],
+        [enable generate graphic image of MinimalLinux])],
+    [GEN_GRAPHIC=$withval],
+    [GEN_GRAPHIC=yes]
+)
+if test "$GEN_GRAPHIC" = "yes"; then
+    AC_PATH_PROG([PYTHON], [python])
+    if test -z "$PYTHON"; then
+        AC_PATH_PROG([PYTHON], [python3])
+    fi
+fi
+AC_SUBST([GEN_GRAPHIC])
+AC_SUBST([PYTHON])
 
 dnl Use '[[', ']]' instead of '[', ']' to avoid Autoconf interpreting.
 BUSYBOX_MIRROR=$(echo "$BUSYBOX_MIRROR" | tr "[[:lower:]]" "[[:upper:]]")
