@@ -25,7 +25,7 @@ jobs:
     #--------------------------------------------build--------------------------------------------
     - name: Build tarball
       run: |
-        sudo make -f Makefile.devel dist
+        sudo make -f Makefile.devel dist VERSION=${{ env.tag }}
     
     - name: Sum md5
       run: |

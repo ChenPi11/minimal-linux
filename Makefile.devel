@@ -12,7 +12,7 @@ XZ := xz
 ACLOCAL_FILE = aclocal.m4
 CONFIGURE = configure
 CONFIGURE_IN = configure.ac
-VERSION = 0.1.1
+VERSION ?= 0.1.1
 
 .PHONY : all check-configures check dist
 
@@ -36,13 +36,13 @@ check : all check-configures
 
 # Make a distribution tarball
 
-CONFIG_FILES = busybox.config grub.cfg linux.config
+CONFIG_FILES = busybox.config grub.cfg linux.config requirements.txt
 
 DOC_FILES = LICENSE README.md
 
 MAKE_FILES = m4 aclocal.m4 configure.ac configure Makefile.devel Makefile.in mirrors.mk.in
 
-SOURCE_FILES = fdisk-input.txt fstab rcS
+SOURCE_FILES = fdisk-input.txt fstab genpicture.py rcS loadpicture.py
 
 DIST_FILELIST = $(CONFIG_FILES) $(DOC_FILES) $(MAKE_FILES) $(SOURCE_FILES)
 

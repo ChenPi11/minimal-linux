@@ -86,7 +86,7 @@ $(LINUX)/arch/$(ARCH)/boot/bzImage : $(LINUX) $(LINUX_CONFIG)
 $(ROOTFS) : rcS $(BUSYBOX)/busybox $(LINUX)/arch/$(ARCH)/boot/bzImage
 	$(MKDIR) -p $(ROOTFS)
 
-	cd $(BUSYBOX) && $(SUDO) $(MAKE) install CONFIG_PREFIX="$(PWD)/$@"
+	cd $(BUSYBOX) && $(MAKE) install CONFIG_PREFIX="$(PWD)/$@"
 
 	cd $(ROOTFS) && $(SUDO) $(MKDIR) -p etc dev home root proc sys mnt boot
 
