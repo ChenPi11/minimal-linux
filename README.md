@@ -15,18 +15,34 @@
 - A shell
   - Mandatory.
   - Either the platform's native 'sh', or GNU Bash.
-  - Homepage:
+  - GNU Bash Homepage:
     <https://www.gnu.org/software/bash>
   - Download:
     <https://ftp.gnu.org/gnu/bash>
 
 - Awk
   - Mandatory.
-    Either the platform's native awk, mawk, or nawk, or GNU awk.
-  - Homepage:
+  - Either the platform's native awk, mawk, or nawk, or GNU awk.
+  - GNU awk Homepage:
     <https://www.gnu.org/software/gawk>
   - Download:
     <https://ftp.gnu.org/gnu/gawk>
+
+- Bc
+  - Mandatory.
+  - Either the platform's native bc, or GNU bc. For building Linux.
+  - GNU bc Homepage:
+    <https://www.gnu.org/software/bc>
+  - Download:
+    <https://ftp.gnu.org/gnu/bc>
+
+- Bison
+  - Mandatory.
+  - Either the platform's native bison, or GNU bison. For building Linux.
+  - GNU Bison Homepace:
+    <https://www.gnu.org/software/bison>
+  - Download:
+    <https://ftp.gnu.org/gnu/bison>
 
 - Core POSIX utilities.
   - Mandatory.
@@ -35,6 +51,14 @@
     <https://www.gnu.org/software/coreutils>
   - Download:
     <https://ftp.gnu.org/gnu/coreutils>
+
+- Flex
+  - Mandatory.
+  - For building Linux.
+  - Homepage:
+    <https://github.com/westes/flex>
+  - Download:
+    <https://github.com/westes/flex/releases>
 
 - GNU Grub
   - Mandatory.
@@ -65,6 +89,14 @@
   - For mounting filesystem.
   - Homepage:
     <http://christophe.varoqui.free.fr>
+
+- libelf
+  - Mandatory.
+  - Must be libelf-dev. For building Linux.
+
+- libssl
+  - Mandatory.
+  - Must be libssl-dev. For building Linux.
 
 - QEMU Utils
   - Mandatory.
@@ -98,11 +130,25 @@
 
 - Wget
   - Mandatory.
-  - Either the platform's native 'wget', or GNU Wget. For get source codes.
+  - Either the platform's native 'wget', or GNU Wget. For getting source codes.
   - GNU Wget Homepage:
     <https://www.gnu.org/software/wget>
   - Download:
     <https://ftp.gnu.org/gnu/wget>
+
+- XZ Utils
+  - Mandatory.
+  - For compressing image file and Linux kernel.
+  - XZ Utils Homepage:
+    <https://xz.tukaani.org/xz-utils>
+  - Download:
+    <https://xz.tukaani.org/xz-utils/#releases>
+
+#### Install building dependencies Debian
+
+```shell
+sudo apt-get update && sudo apt-get install gcc xz-utils gawk grub2 make grep kpartx qemu-utils sed util-linux wget binutils libelf-dev libssl-dev bc flex bison -y
+```
 
 ### For generating graphic
 
@@ -113,6 +159,20 @@
     <https://python.org>
   - Download:
     <https://python.org/ftp/python>
+
+- Python Pillow
+  - Mandatory.
+  - For `make graphic` command.
+  - Homepage:
+    <https://python-pillow.org>
+  - Download:
+    <https://pypi.org/project/pillow/#files>
+
+#### Install graphic-generating dependencies Debian
+
+```shell
+sudo apt-get update && sudo apt-get install python3 python3-pillow -y
+```
 
 ### For testing
 
@@ -130,7 +190,11 @@
   - Download:
     <https://www.qemu.org/download>
 
-**And other dependencies for building Linux kernel.**
+#### Install testing dependencies Debian
+
+```shell
+sudo apt-get update && sudo apt-get install tree qemu-system -y
+```
 
 ## Build source tarball
 
