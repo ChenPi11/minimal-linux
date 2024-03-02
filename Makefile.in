@@ -61,7 +61,7 @@ endif
 
 .PHONY : _makeimg_part_1 _makeimg_part_2 clean totally-clean check picture-yes picture-no picture
 
-all : $(IMAGE_FILE)
+all : $(ROOTFS).tar.xz $(IMAGE_FILE)
 
 $(BUSYBOX).tar.bz2 :
 	$(WGET) "$(BUSYBOX_URL)" -O $@
@@ -121,6 +121,10 @@ $(ROOTFS) : rcS $(BUSYBOX)/busybox $(LINUX)/arch/$(ARCH)/boot/bzImage
 
 	$(SUDO) $(CHOWN) -R root:root $(ROOTFS)
 
+$(ROOTFS).tar.xz : $(ROOTFS)
+	$(TAR) -c -v -f $(ROOTFS).tar $^
+	$(XZ) -z -c -9 $(ROOTFS).tar > $@
+
 $(IMAGE_FILE) : $(ROOTFS) $(FDISK_INPUT_FILE)
 	$(SUDO) $(CREATE_IMAGE)
 	$(SUDO) $(FDISK) $(IMAGE_FILE) < $(FDISK_INPUT_FILE)
@@ -150,6 +154,7 @@ $(IMAGE_FILE).xz : $(IMAGE_FILE)
 
 picture-yes : $(IMAGE_FILE).xz 
 	$(PYTHON) $(PICTURE_GENERATOR) $(IMAGE_FILE).xz
+	$(PYTHON) $(PICTURE_GENERATOR) $(ROOTFS).tar.xz
 
 picture-no : $(IMAGE_FILE).xz
 
