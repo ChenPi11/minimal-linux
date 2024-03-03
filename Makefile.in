@@ -88,7 +88,7 @@ $(ROOTFS) : rcS $(BUSYBOX)/busybox $(LINUX)/arch/$(ARCH)/boot/bzImage
 
 	cd $(BUSYBOX) && $(MAKE) install CONFIG_PREFIX="$(PWD)/$@"
 
-	cd $(ROOTFS) && $(SUDO) $(MKDIR) -p etc dev home root proc sys mnt boot
+	cd $(ROOTFS) && $(SUDO) $(MKDIR) -p etc dev proc sys boot
 
 	$(SUDO) cp "$(LINUX)/arch/$(ARCH)/boot/bzImage" "$(ROOTFS)/boot/vmlinuz"
 	$(SUDO) $(CHMOD) 0755 "$(ROOTFS)/boot/vmlinuz"
