@@ -52,16 +52,16 @@ include mirrors.mk
 BUSYBOX_URL = $(BUSYBOX_MIRROR)/$(BUSYBOX).tar.bz2
 LINUX_URL = $(LINUX_MIRROR)/v$(LINUX_VERSION_MAJOR).x/$(LINUX).tar.xz
 
-# Bug fix
+# Bug fix.
 PWD ?= $(shell pwd)
 
 ifneq (,)
 This makefile requires GNU Make.
 endif
 
-.PHONY : _makeimg_part_1 _makeimg_part_2 clean totally-clean check picture-yes picture-no picture
+.PHONY : _makeimg_part_1 _makeimg_part_2 clean totally-clean check picture
 
-all : $(ROOTFS).tar.xz $(IMAGE_FILE)
+all : picture
 
 $(BUSYBOX).tar.bz2 :
 	$(WGET) "$(BUSYBOX_URL)" -O $@
@@ -152,27 +152,38 @@ _makeimg_part_2 :
 $(IMAGE_FILE).xz : $(IMAGE_FILE)
 	$(XZ) -z -c -9 $^ > $@
 
-picture-yes : $(IMAGE_FILE).xz 
-	$(PYTHON) $(PICTURE_GENERATOR) $(IMAGE_FILE).xz
-	$(PYTHON) $(PICTURE_GENERATOR) $(ROOTFS).tar.xz
+$(ROOTFS).tar.xz-2colors.png : $(ROOTFS).tar.xz
+	$(PYTHON) $(PICTURE_GENERATOR) $^ -2
 
-picture-no : $(IMAGE_FILE).xz
+$(ROOTFS).tar.xz-256colors.png : $(ROOTFS).tar.xz
+	$(PYTHON) $(PICTURE_GENERATOR) $^ -256
 
-picture : picture-@GEN_PICTURE@
+$(IMAGE_FILE).xz-2colors.png : $(IMAGE_FILE).xz
+	$(PYTHON) $(PICTURE_GENERATOR) $^ -2
+
+$(IMAGE_FILE).xz-256colors.png : $(IMAGE_FILE).xz
+	$(PYTHON) $(PICTURE_GENERATOR) $^ -256
+
+picture : $(ROOTFS).tar.xz-2colors.png $(ROOTFS).tar.xz-256colors.png $(IMAGE_FILE).xz-2colors.png $(IMAGE_FILE).xz-256colors.png
 
 clean :
 	$(RM) -r -f $(BUSYBOX)
 	$(RM) -r -f $(LINUX)
 	$(RM) -r -f $(ROOTFS)
+	$(RM) -f $(ROOTFS).tar
+	$(RM) -f $(ROOTFS).tar.xz
+	$(RM) -f $(ROOTFS).tar.xz-2colors.png
+	$(RM) -f $(ROOTFS).tar.xz-256colors.png
 	$(RM) -f $(IMAGE_FILE)
+	$(RM) -f $(IMAGE_FILE).xz
+	$(RM) -f $(IMAGE_FILE).xz-2colors.png
+	$(RM) -f $(IMAGE_FILE).xz-256colors.png
 
 totally-clean : clean
 	$(RM) -f $(BUSYBOX).tar.bz2
 	$(RM) -f $(LINUX).tar.xz
 
-check : all picture
+check : all
 	@echo "BUSYBOX: $(BUSYBOX)"
-	@echo "APPLETS:"
-	./$(ROOTFS)/bin/busybox --list
-	$(SUDO) $(DU) -sh "$(ROOTFS)"
+	$(SUDO) $(DU) -sh $(ROOTFS).tar.xz $(IMAGE_FILE).xz
 	$(SUDO) $(QEMU_SYSTEM) -hda $(IMAGE_FILE) -m 512M $(QEMU_ARGS)

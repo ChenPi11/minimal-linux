@@ -14,6 +14,10 @@ CONFIGURE = configure
 CONFIGURE_IN = configure.ac
 VERSION ?= 0.1.1
 
+ifneq (,)
+This makefile requires GNU Make.
+endif
+
 .PHONY : all check-configures check dist
 
 all : configure
@@ -29,7 +33,7 @@ $(CONFIGURE) : $(CONFIGURE_IN) $(AUTOCONF_FILES)
 check-configures : $(CONFIGURE)
 	set -e; for f in $(CONFIGURE); do bash -x -n $$f; done
 
-check : all check-configures
+check : all check-configures dist
 	./$(CONFIGURE) --with-linux-mirror=TSINGHUA
 	$(MAKE) picture
 	$(MAKE) check
@@ -56,4 +60,15 @@ dist : all
 
 clean :
 	if test -f Makefile; then $(MAKE) totally-clean; fi
-	$(RM) -r -f *.tar *.xz minimal-linux-$(VERSION) $(ACLOCAL_FILE) $(CONFIGURE) autom4te.cache config.log config.status configure fs Makefile mirrors.mk
+	$(RM) -r -f *.tar
+	$(RM) -r -f *.xz
+	$(RM) -r -f minimal-linux-$(VERSION)
+	$(RM) -f $(ACLOCAL_FILE)
+	$(RM) -f $(CONFIGURE)
+	$(RM) -f $(CONFIGURE)~
+	$(RM) -f autom4te.cache
+	$(RM) -f config.log
+	$(RM) -f config.status
+	$(RM) -f fs
+	$(RM) -f Makefile
+	$(RM) -f mirrors.mk

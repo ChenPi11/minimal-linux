@@ -231,10 +231,6 @@ The disk image will be name to `disk.img`.
   - Specify the mirror of Linux kernel. If you want to use the Tsinghua mirror, set it to `TSINGHUA`. Otherwise, set it to the URL of the mirror.
   - Default is `OFFICIAL`.
 
-- `--with-picture=yes | no`
-  - Enable generate picture image of MinimalLinux. This picture can be unpacked by `loadpicture.py`.
-  - Default is `yes`
-
 Like this:
 
 ```shell

@@ -164,32 +164,34 @@ def gen_256_colors_picture(
 if __name__ == "__main__":
     # Set locale to the user's default setting.
     locale.setlocale(locale.LC_ALL, locale.setlocale(locale.LC_ALL, ""))
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <file>")
+    if len(sys.argv) != 3 and not ("-2" in sys.argv or "-256" in sys.argv):
+        print(f"Usage: {sys.argv[0]} <file> [-2 | -256]")
         sys.exit(1)
 
     source_file = Path(sys.argv[1])
+    picture_mode = sys.argv[2] == "-2"
 
-    # Generate 2 colors picture
-    data_io, file_size = get_data_io(
-        source_file,
-        GREET_MSG_2COLORS,
-    )
-    picture_width = math.ceil(math.sqrt(file_size * 8))
-    picture_height = picture_width
-    print(f"Generating 2 colors picture: {picture_width}x{picture_height}")
-    picture = gen_2_colors_picture(data_io, picture_width, picture_height)
-    picture.save(f"{source_file.name}-2colors.png")
-    print(f"Saved to {source_file.name}-2colors.png")
-
-    # Generate 256 colors picture
-    data_io, file_size = get_data_io(
-        source_file,
-        GREET_MSG_256COLORS,
-    )
-    picture_width = math.ceil(math.sqrt(file_size / 3))
-    picture_height = picture_width
-    print(f"Generating 256 colors picture: {picture_width}x{picture_height}")
-    picture = gen_256_colors_picture(data_io, picture_width, picture_height)
-    picture.save(f"{source_file.name}-256colors.png")
-    print(f"Saved to {source_file.name}-256colors.png")
+    if picture_mode:
+        # Generate 2 colors picture
+        data_io, file_size = get_data_io(
+            source_file,
+            GREET_MSG_2COLORS,
+        )
+        picture_width = math.ceil(math.sqrt(file_size * 8))
+        picture_height = picture_width
+        print(f"Generating 2 colors picture: {picture_width}x{picture_height}")
+        picture = gen_2_colors_picture(data_io, picture_width, picture_height)
+        picture.save(f"{source_file.name}-2colors.png")
+        print(f"Saved to {source_file.name}-2colors.png")
+    else:
+        # Generate 256 colors picture
+        data_io, file_size = get_data_io(
+            source_file,
+            GREET_MSG_256COLORS,
+        )
+        picture_width = math.ceil(math.sqrt(file_size / 3))
+        picture_height = picture_width
+        print(f"Generating 256 colors picture: {picture_width}x{picture_height}")  # noqa: E501
+        picture = gen_256_colors_picture(data_io, picture_width, picture_height)  # noqa: E501
+        picture.save(f"{source_file.name}-256colors.png")
+        print(f"Saved to {source_file.name}-256colors.png")
