@@ -38,6 +38,7 @@ AC_PATH_PROG([MKDIR], [mkdir])
 AC_PATH_PROG([MKFS_EXT4], [mkfs.ext4])
 AC_PATH_PROG([MKNOD], [mknod])
 AC_PATH_PROG([MOUNT], [mount])
+AC_PATH_PROG([PATCH], [patch])
 AC_PATH_PROG([PYTHON], [python])
 if test -z "$PYTHON"; then
     AC_PATH_PROG([PYTHON], [python3])

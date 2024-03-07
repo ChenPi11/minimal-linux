@@ -15,6 +15,8 @@ MKDIR := @MKDIR@
 MKEXT4 := @MKFS_EXT4@
 MKNOD := @MKNOD@
 MOUNT := @MOUNT@
+PYTHON := @PYTHON@
+PATCH := @PATCH@
 QEMU_IMG := @QEMU_IMG@
 RM := @RM@
 SUDO := @SUDO@
@@ -44,9 +46,8 @@ MUSL_CC = $(PWD)/musl/bin/musl-gcc
 ROOTFS = rootfs
 SYSROOT = @SYSROOT@
 
-# Dependencies for generating picture.
-PYTHON := @PYTHON@
-PICTURE_GENERATOR := "genpicture.py"
+# Picture generator.
+PICTURE_GENERATOR = "genpicture.py"
 
 # Dependencies for testing.
 DU := du
@@ -87,6 +88,7 @@ $(BUSYBOX).tar.bz2 :
 $(BUSYBOX) : $(BUSYBOX).tar.bz2
 	@echo "Extracting $@ ..."
 	$(TAR) -xf $^
+	$(PATCH) -p1 "$@/init/init.c" < bb-patches/init.c.patch
 
 $(BUSYBOX)/busybox : $(BUSYBOX) $(BUSYBOX_CONFIG) musl
 	cp $(BUSYBOX_CONFIG) "$(BUSYBOX)/.config"
@@ -101,7 +103,7 @@ $(LINUX) : $(LINUX).tar.xz
 
 $(LINUX)/arch/$(ARCH)/boot/bzImage : $(LINUX) $(LINUX_CONFIG)
 	cp $(LINUX_CONFIG) "$(LINUX)/.config"
-	cd $(LINUX) && $(MAKE) all CC="$(MUSL_CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
+	cd $(LINUX) && $(MAKE) all CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
 
 $(ROOTFS) : rcS $(BUSYBOX)/busybox $(LINUX)/arch/$(ARCH)/boot/bzImage
 	$(MKDIR) -p $(ROOTFS)
