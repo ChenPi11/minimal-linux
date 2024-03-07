@@ -18,16 +18,13 @@ AC_PREREQ([2.64])
 AC_INIT([MinimalLinux], [0.1])
 AC_PROG_MAKE_SET
 
-dnl           checks for basic programs
 
+dnl Checks for basic programs.
 AC_PROG_CC
+AC_PATH_PROG([STRIP], [strip], [:])
 
-AC_PATH_PROG([STRIP], [strip], [:]) dnl sets STRIP
 
-dnl           check for host type
-
-dnl           checks for programs
-
+dnl Checks for programs.
 CL_PROG_CP
 CL_PROG_LN
 AC_PROG_LN_S
@@ -54,7 +51,8 @@ AC_PATH_PROG([UMOUNT], [umount])
 AC_PATH_PROG([WGET], [wget])
 AC_PATH_PROG([XZ], [xz])
 
-# Options
+
+dnl Version options.
 AC_ARG_WITH([busybox-version],
     [AS_HELP_STRING([--with-busybox-version=X.X.X],
         [define the version of BusyBox])],
@@ -67,31 +65,32 @@ AC_ARG_WITH([linux-version],
     [AS_HELP_STRING([--with-linux-version=X.X.X],
         [define the version of Linux kernel])],
     [LINUX_VERSION=$withval],
-    [LINUX_VERSION=6.7.5]
+    [LINUX_VERSION=6.7.9]
 )
 LINUX_VERSION_MAJOR=$(echo $LINUX_VERSION | cut -d. -f1)
 AC_SUBST([LINUX_VERSION])
 AC_SUBST([LINUX_VERSION_MAJOR])
 
-dnl Use '[[', ']]' instead of '[', ']' to avoid Autoconf interpreting.
-BUSYBOX_MIRROR=$(echo "$BUSYBOX_MIRROR" | tr "[[:lower:]]" "[[:upper:]]")
-BUSYBOX_MIRROR_CUSTOME=
-if test "$BUSYBOX_MIRROR" != "OFFICIAL"; then
-    BUSYBOX_MIRROR_CUSTOME=$BUSYBOX_MIRROR
-    BUSYBOX_MIRROR=CUSTOME
-fi
-AC_SUBST([BUSYBOX_MIRROR])
-AC_SUBST([BUSYBOX_MIRROR_CUSTOME])
+AC_ARG_WITH([musl-version],
+    [AS_HELP_STRING([--with-musl-version=X.X.X],
+        [define the version of musl libc])],
+    [MUSL_VERSION=$withval],
+    [MUSL_VERSION=1.2.5]
+)
+AC_SUBST([MUSL_VERSION])
 
+
+dnl Mirror options.
 AC_ARG_WITH([linux-mirror],
     [AS_HELP_STRING([--with-linux-mirror=OFFICIAL | CDN | TSINGHUA | ALIYUN | USTC | <URL>],
         [define the mirror of Linux kernel])],
     [LINUX_MIRROR=$withval],
     [LINUX_MIRROR=OFFICIAL]
 )
-LINUX_MIRROR=$(echo "$LINUX_MIRROR" | tr "[[:lower:]]" "[[:upper:]]")
+dnl Use '[[', ']]' instead of '[', ']' to avoid Autoconf interpreting.
+LINUX_MIRROR_CHECK=$(echo "$LINUX_MIRROR" | tr "[[:lower:]]" "[[:upper:]]")
 LINUX_MIRROR_CUSTOME=
-if test "$LINUX_MIRROR" != "OFFICIAL" -a "$LINUX_MIRROR" != "CDN" -a "$LINUX_MIRROR" != "TSINGHUA" -a "$LINUX_MIRROR" != "ALIYUN" -a "$LINUX_MIRROR" != "USTC"; then
+if test "$LINUX_MIRROR_CHECK" != "OFFICIAL" -a "$LINUX_MIRROR_CHECK" != "CDN" -a "$LINUX_MIRROR_CHECK" != "TSINGHUA" -a "$LINUX_MIRROR_CHECK" != "ALIYUN" -a "$LINUX_MIRROR_CHECK" != "USTC"; then
     LINUX_MIRROR_CUSTOME=$LINUX_MIRROR
     LINUX_MIRROR=CUSTOME
 fi
@@ -104,9 +103,40 @@ AC_ARG_WITH([busybox-mirror],
     [BUSYBOX_MIRROR=$withval],
     [BUSYBOX_MIRROR=OFFICIAL]
 )
+BUSYBOX_MIRROR_CHECK=$(echo "$BUSYBOX_MIRROR" | tr "[[:lower:]]" "[[:upper:]]")
+BUSYBOX_MIRROR_CUSTOME=
+if test "$BUSYBOX_MIRROR_CHECK" != "OFFICIAL"; then
+    BUSYBOX_MIRROR_CUSTOME=$BUSYBOX_MIRROR
+    BUSYBOX_MIRROR=CUSTOME
+fi
+AC_SUBST([BUSYBOX_MIRROR])
+AC_SUBST([BUSYBOX_MIRROR_CUSTOME])
 
-dnl           checks for build configuration
+AC_ARG_WITH([musl-mirror],
+    [AS_HELP_STRING([--with-musl-mirror=OFFICIAL | <URL>],
+        [define the mirror of musl libc])],
+    [MUSL_MIRROR=$withval],
+    [MUSL_MIRROR=OFFICIAL]
+)
+MUSL_MIRROR_CHECK=$(echo "$MUSL_MIRROR" | tr "[[:lower:]]" "[[:upper:]]")
+MUSL_MIRROR_CUSTOME=
+if test "$MUSL_MIRROR_CHECK" != "OFFICIAL"; then
+    MUSL_MIRROR_CUSTOME=$MUSL_MIRROR
+    MUSL_MIRROR=CUSTOME
+fi
+AC_SUBST([MUSL_MIRROR])
+AC_SUBST([MUSL_MIRROR_CUSTOME])
 
+AC_ARG_WITH([sysroot],
+    [AS_HELP_STRING([--with-sysroot=SYSROOT],
+        [define the unix system resources path (defaults to /usr)])],
+    [SYSROOT=$withval],
+    [SYSROOT=/usr]
+)
+AC_SUBST([SYSROOT])
+
+
+dnl Checks for build configuration.
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([mirrors.mk])
 AC_OUTPUT

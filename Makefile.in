@@ -1,5 +1,8 @@
 # Makefile for minimal-linux
 
+# Bug fix.
+PWD ?= $(shell pwd)
+
 # Dependencies for building.
 CC := @CC@
 CHMOD := @CHMOD@
@@ -36,7 +39,10 @@ IMAGE_SIZE = 6.1M
 LINUX = linux-@LINUX_VERSION@
 LINUX_CONFIG = linux.config
 LINUX_VERSION_MAJOR = @LINUX_VERSION_MAJOR@
+MUSL = musl-@MUSL_VERSION@
+MUSL_CC = $(PWD)/musl/bin/musl-gcc
 ROOTFS = rootfs
+SYSROOT = @SYSROOT@
 
 # Dependencies for generating picture.
 PYTHON := @PYTHON@
@@ -51,9 +57,7 @@ QEMU_SYSTEM := qemu-system-$(ARCH)
 include mirrors.mk
 BUSYBOX_URL = $(BUSYBOX_MIRROR)/$(BUSYBOX).tar.bz2
 LINUX_URL = $(LINUX_MIRROR)/v$(LINUX_VERSION_MAJOR).x/$(LINUX).tar.xz
-
-# Bug fix.
-PWD ?= $(shell pwd)
+MUSL_URL = $(MUSL_MIRROR)/$(MUSL).tar.gz
 
 ifneq (,)
 This makefile requires GNU Make.
@@ -63,30 +67,46 @@ endif
 
 all : picture
 
+$(MUSL).tar.gz : 
+	$(WGET) "$(MUSL_URL)" -O $@
+
+$(MUSL) : $(MUSL).tar.gz
+	@echo "Extracting $@ ..."
+	$(TAR) -zxf $^
+
+musl : $(MUSL) $(LINUX)
+	cd $(MUSL) && ./configure --prefix="$(PWD)/$@" --disable-shared --enable-static --disable-debug --enable-optimize --enable-warnings --enable-wrapper
+	cd $(MUSL) && $(MAKE) all
+	cd $(MUSL) && $(MAKE) install
+	if test ! -f $(MUSL_CC); then echo "$(MUSL_CC) is not exists!" && exit 1; fi
+	cd $(LINUX) && CC=false $(MAKE) ARCH=$(ARCH) "INSTALL_HDR_PATH=$(PWD)/$@" headers_install
+
 $(BUSYBOX).tar.bz2 :
 	$(WGET) "$(BUSYBOX_URL)" -O $@
 
 $(BUSYBOX) : $(BUSYBOX).tar.bz2
-	$(TAR) -xvf $^
+	@echo "Extracting $@ ..."
+	$(TAR) -xf $^
 
-$(BUSYBOX)/busybox : $(BUSYBOX) $(BUSYBOX_CONFIG)
+$(BUSYBOX)/busybox : $(BUSYBOX) $(BUSYBOX_CONFIG) musl
 	cp $(BUSYBOX_CONFIG) "$(BUSYBOX)/.config"
-	cd $(BUSYBOX) && $(MAKE) all CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
+	cd $(BUSYBOX) && $(MAKE) all CC="$(MUSL_CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
 
 $(LINUX).tar.xz :
 	$(WGET) "$(LINUX_URL)" -O $@
 
 $(LINUX) : $(LINUX).tar.xz
-	$(TAR) -xvf $^
+	@echo "Extracting $@ ..."
+	$(TAR) -xf $^
 
 $(LINUX)/arch/$(ARCH)/boot/bzImage : $(LINUX) $(LINUX_CONFIG)
 	cp $(LINUX_CONFIG) "$(LINUX)/.config"
-	cd $(LINUX) && $(MAKE) all CC="$(CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
+	cd $(LINUX) && $(MAKE) all CC="$(MUSL_CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
 
 $(ROOTFS) : rcS $(BUSYBOX)/busybox $(LINUX)/arch/$(ARCH)/boot/bzImage
 	$(MKDIR) -p $(ROOTFS)
 
-	cd $(BUSYBOX) && $(MAKE) install CONFIG_PREFIX="$(PWD)/$@"
+	cd $(BUSYBOX) && $(MAKE) install CONFIG_PREFIX="$(PWD)/$@" CC="$(MUSL_CC)" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
 
 	cd $(ROOTFS) && $(SUDO) $(MKDIR) -p etc dev proc sys boot
 
@@ -186,4 +206,5 @@ totally-clean : clean
 check : all
 	@echo "BUSYBOX: $(BUSYBOX)"
 	$(SUDO) $(DU) -sh $(ROOTFS).tar.xz $(IMAGE_FILE).xz
+	cd $(BUSYBOX) && make check
 	$(SUDO) $(QEMU_SYSTEM) -hda $(IMAGE_FILE) -m 512M $(QEMU_ARGS)

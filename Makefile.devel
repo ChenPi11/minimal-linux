@@ -55,8 +55,7 @@ dist : all
 	$(MKDIR) -p minimal-linux-$(VERSION)
 	cp -r $(DIST_FILELIST) minimal-linux-$(VERSION)
 	$(TAR) -cvf minimal-linux-$(VERSION).tar minimal-linux-$(VERSION)
-	$(XZ) -9 minimal-linux-$(VERSION).tar
-	$(RM) -r -f minimal-linux-$(VERSION).tar
+	$(XZ) -9 -f minimal-linux-$(VERSION).tar
 
 clean :
 	if test -f Makefile; then $(MAKE) totally-clean; fi

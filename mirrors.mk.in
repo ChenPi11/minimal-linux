@@ -1,6 +1,6 @@
 # Mirrors for Linux and BusyBox.
 
-# The Linux kernel
+# Linux kernel
 LINUX_MIRROR_OFFICIAL := https://www.kernel.org/pub/linux/kernel
 LINUX_MIRROR_CDN := https://cdn.kernel.org/pub/linux/kernel
 LINUX_MIRROR_TSINGHUA := https://mirrors.tuna.tsinghua.edu.cn/kernel
@@ -12,5 +12,11 @@ LINUX_MIRROR_CUSTOME:= @LINUX_MIRROR_CUSTOME@
 BUSYBOX_MIRROR_OFFICIAL := https://busybox.net/downloads
 BUSYBOX_MIRROR_CUSTOME:= @BUSYBOX_MIRROR_CUSTOME@
 
+# musl libc
+MUSL_MIRROR_OFFICIAL := https://musl.libc.org/releases
+MUSL_MIRROR_CUSTOME:= @MUSL_MIRROR_CUSTOME@
+
+
 LINUX_MIRROR = $(LINUX_MIRROR_@LINUX_MIRROR@)
 BUSYBOX_MIRROR = $(BUSYBOX_MIRROR_@BUSYBOX_MIRROR@)
+MUSL_MIRROR = $(MUSL_MIRROR_@MUSL_MIRROR@)
