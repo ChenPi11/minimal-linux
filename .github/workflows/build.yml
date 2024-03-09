@@ -42,7 +42,7 @@ jobs:
             ${{ env.pkgname }}.tar.xz.sha256
 
 
-  build-diskimage:
+  build-binary:
   
     needs: build-dist
     
@@ -61,13 +61,14 @@ jobs:
     - name: Collect dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install gcc cpio xz-utils gawk grub2 make grep kpartx qemu-utils sed util-linux wget python3-pillow -y
+        sudo apt-get install gcc cpio xz-utils gawk grub2 make grep kpartx qemu-utils sed util-linux wget -y
         sudo apt-get install binutils libelf-dev libssl-dev bc flex bison -y
     
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
         python-version: 3.11.4
+    - run: pip install -r requirements.txt
 
     - name: Get source distribution tarball
       run: |
