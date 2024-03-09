@@ -30,12 +30,14 @@ CL_PROG_LN
 AC_PROG_LN_S
 AC_PATH_PROG([CHMOD], [chmod])
 AC_PATH_PROG([CHOWN], [chown])
+AC_PATH_PROG([CPIO], [cpio])
 AC_PATH_PROG([FDISK], [fdisk])
+AC_PATH_PROG([FIND], [find])
 AC_PATH_PROG([GRUB_INSTALL], [grub-install])
 AC_PATH_PROG([KPARTX], [kpartx])
 AC_PATH_PROG([LOSETUP], [losetup])
 AC_PATH_PROG([MKDIR], [mkdir])
-AC_PATH_PROG([MKFS_EXT4], [mkfs.ext4])
+AC_PATH_PROG([MKFS_EXT2], [mkfs.ext2])
 AC_PATH_PROG([MKNOD], [mknod])
 AC_PATH_PROG([MOUNT], [mount])
 AC_PATH_PROG([PATCH], [patch])
@@ -127,14 +129,6 @@ if test "$MUSL_MIRROR_CHECK" != "OFFICIAL"; then
 fi
 AC_SUBST([MUSL_MIRROR])
 AC_SUBST([MUSL_MIRROR_CUSTOME])
-
-AC_ARG_WITH([sysroot],
-    [AS_HELP_STRING([--with-sysroot=SYSROOT],
-        [define the unix system resources path (defaults to /usr)])],
-    [SYSROOT=$withval],
-    [SYSROOT=/usr]
-)
-AC_SUBST([SYSROOT])
 
 
 dnl Checks for build configuration.

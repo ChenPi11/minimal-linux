@@ -35,7 +35,7 @@ check-configures : $(CONFIGURE)
 
 check : all check-configures dist
 	./$(CONFIGURE) --with-linux-mirror=TSINGHUA
-	$(MAKE) picture
+	$(MAKE) all
 	$(MAKE) check
 
 # Make a distribution tarball
@@ -46,7 +46,7 @@ DOC_FILES = LICENSE README.md
 
 MAKE_FILES = m4 aclocal.m4 configure.ac configure Makefile.devel Makefile.in mirrors.mk.in
 
-SOURCE_FILES = fdisk-input.txt fstab genpicture.py rcS loadpicture.py
+SOURCE_FILES = fdisk-input.txt genpicture.py loadpicture.py bb-patches
 
 DIST_FILELIST = $(CONFIG_FILES) $(DOC_FILES) $(MAKE_FILES) $(SOURCE_FILES)
 

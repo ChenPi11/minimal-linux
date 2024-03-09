@@ -71,21 +71,22 @@ jobs:
 
     - name: Get source distribution tarball
       run: |
-        sudo wget https://github.com/${{ github.repository }}/releases/download/${{ env.tag }}/${{ env.pkgname }}.tar.xz
-        sudo tar xvf ${{ env.pkgname }}.tar.xz
-        sudo mv ${{ env.pkgname }}/* .
+        wget https://github.com/${{ github.repository }}/releases/download/${{ env.tag }}/${{ env.pkgname }}.tar.xz
+        tar xvf ${{ env.pkgname }}.tar.xz
+        mv ${{ env.pkgname }}/* .
     
     #--------------------------------------------build--------------------------------------------
     
     - name: Build binary distribution
       run: |
-        sudo ./configure
-        sudo make all -j$(nproc)
+        ./configure
+        make all -j$(nproc)
     
     - name: Make packages
       run: |
-        sudo sha256sum disk.img.xz > disk.img.xz.sha256
-        sudo sha256sum rootfs.tar.xz > rootfs.tar.xz.sha256
+        sha256sum disk.img.xz > disk.img.xz.sha256
+        sha256sum rootfs.tar.xz > rootfs.tar.xz.sha256
+        sha256sum vmlinuz.xz > vmlinuz.xz.sha256
     
     #--------------------------------------------publish--------------------------------------------
 
@@ -98,4 +99,6 @@ jobs:
           disk.img.xz.sha256
           rootfs.tar.xz
           rootfs.tar.xz.sha256
+          vmlinuz.xz
+          vmlinuz.xz.sha256
           *.png

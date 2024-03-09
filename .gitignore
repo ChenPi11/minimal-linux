@@ -10,6 +10,7 @@ conftest.*
 fs
 *.gz
 *.img
+initrd.cpio
 linux-*
 *.log
 Makefile
@@ -20,5 +21,6 @@ musl-*
 rootfs
 *.sha256
 *.tar
+vmlinuz
 .vscode
 *.xz
