@@ -44,13 +44,21 @@
   - Download:
     <https://ftp.gnu.org/gnu/bison>
 
-- Core POSIX utilities.
+- Core POSIX utilities
   - Mandatory.
   - Either the platform's native utilities, or GNU coreutils.
-  - Homepage:
+  - GNU coreutils Homepage:
     <https://www.gnu.org/software/coreutils>
   - Download:
     <https://ftp.gnu.org/gnu/coreutils>
+
+- Cpio
+  - Mandatory.
+  - Either the platfrom's native cpio, or GNU cpio.
+  - GNU cpio Homepage:
+    <https://www.gnu.org/software/cpio>
+  - Download:
+    <https://ftp.gnu.org/gnu/cpio>
 
 - Flex
   - Mandatory.
@@ -147,7 +155,7 @@
 #### Install building dependencies Debian
 
 ```shell
-sudo apt-get update && sudo apt-get install gcc xz-utils gawk grub2 make grep kpartx qemu-utils sed util-linux wget binutils libelf-dev libssl-dev bc flex bison -y
+sudo apt-get update && sudo apt-get install gcc cpio xz-utils gawk grub2 make grep kpartx qemu-utils sed util-linux wget binutils libelf-dev libssl-dev bc flex bison -y
 ```
 
 ### For generating picture
@@ -172,6 +180,12 @@ sudo apt-get update && sudo apt-get install gcc xz-utils gawk grub2 make grep kp
 
 ```shell
 sudo apt-get update && sudo apt-get install python3 python3-pillow -y
+```
+
+Or you can using pip to install Pillow.
+
+```shell
+pip install Pillow
 ```
 
 ### For testing
@@ -202,7 +216,7 @@ sudo apt-get update && sudo apt-get install tree qemu-system -y
 make -f Makefile.devel dist
 ```
 
-## Build disk image
+## Build rootfs, linux kernel and disk image
 
 **You need to install the dependencies first, and make sure you are in source directory.**
 
@@ -211,7 +225,9 @@ make -f Makefile.devel dist
 make -j$(nproc)
 ```
 
-The disk image will be name to `disk.img`.
+The compressed rootfs will be name to `rootfs.tar.xz`.
+The compressed linux kernel will be name to `vmlinuz.xz`.
+The compressed disk image will be name to `disk.img`.
 
 ## Configure parameters
 
@@ -237,17 +253,24 @@ Like this:
 ./configure --with-busybox-version=1.36.1 --with-linux-version=6.7.5 --with-busybox-mirror=OFFICIAL --with-linux-mirror=TSINGHUA
 ```
 
-## Run disk image
+## Run
+
+**You should use origin binary file instead of XZ compressed one!!!**
+
+Using this command to run `disk.img`.
 
 ```shell
-make check
+qemu-system-x86_64 -m 1024 -hda disk.img
 ```
 
-Or you can run the disk image with QEMU.
+Using this command to run `vmlinuz`.
 
 ```shell
-qemu-system-x86_64 -hda disk.img
+qemu-system-x86_64 -m 1024 -kernel vmlinuz
 ```
+
+**This vmlinuz contians initramfs, so you can execute it directly using QEMU.**
+
 
 ## Copyright
 
