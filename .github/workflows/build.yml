@@ -21,7 +21,12 @@ jobs:
         echo "tag=$tag" >> $GITHUB_ENV
         echo "pkgname=minimal-linux-$tag" >> $GITHUB_ENV
         echo "srcdir=$(pwd)" >> $GITHUB_ENV
-        
+
+    - name: Collect dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install autoconf automake -y
+
     #--------------------------------------------build--------------------------------------------
     - name: Build tarball
       run: |

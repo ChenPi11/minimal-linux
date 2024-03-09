@@ -2,7 +2,7 @@
 
 ## Dependencies
 
-### For building
+### For building binary
 
 - A C runtime, compiler, linker, etc.
   - Mandatory.
@@ -152,10 +152,32 @@
   - Download:
     <https://xz.tukaani.org/xz-utils/#releases>
 
-#### Install building dependencies Debian
+#### Install binary building dependencies on Debian
 
 ```shell
 sudo apt-get update && sudo apt-get install gcc cpio xz-utils gawk grub2 make grep kpartx qemu-utils sed util-linux wget binutils libelf-dev libssl-dev bc flex bison -y
+```
+
+### For building tarball
+
+- GNU Autoconf
+  - Mandatory.
+  - Homepage:
+    <https://www.gnu.org/software/autoconf>
+  - Download:
+    <https://ftp.gnu.org/gnu/autoconf>
+
+- GNU Automake
+  - Mandatory.
+  - Homepage:
+    <https://www.gnu.org/software/automake>
+  - Download:
+    <https://ftp.gnu.org/gnu/automake>
+
+#### Install tarball building dependencies Debian
+
+```shell
+sudo apt-get update && sudo apt-get autoconf automake -y
 ```
 
 ### For generating picture
@@ -176,7 +198,7 @@ sudo apt-get update && sudo apt-get install gcc cpio xz-utils gawk grub2 make gr
   - Download:
     <https://pypi.org/project/pillow/#files>
 
-#### Install picture-generating dependencies Debian
+#### Install picture-generating dependencies on Debian
 
 ```shell
 sudo apt-get update && sudo apt-get install python3 python3-pillow -y
@@ -204,7 +226,7 @@ pip install Pillow
   - Download:
     <https://www.qemu.org/download>
 
-#### Install testing dependencies Debian
+#### Install testing dependencies on Debian
 
 ```shell
 sudo apt-get update && sudo apt-get install tree qemu-system -y
@@ -212,13 +234,13 @@ sudo apt-get update && sudo apt-get install tree qemu-system -y
 
 ## Build source tarball
 
+**You need to install the dependencies first, and make sure you are in source directory.**
+
 ```shell
 make -f Makefile.devel dist
 ```
 
 ## Build rootfs, linux kernel and disk image
-
-**You need to install the dependencies first, and make sure you are in source directory.**
 
 ```shell
 ./configure
@@ -229,7 +251,7 @@ The compressed rootfs will be name to `rootfs.tar.xz`.
 The compressed linux kernel will be name to `vmlinuz.xz`.
 The compressed disk image will be name to `disk.img`.
 
-## Configure parameters
+## Configuration options
 
 - `--with-busybox-version=X.X.X`
   - Specify the version of Busybox.
@@ -270,7 +292,6 @@ qemu-system-x86_64 -m 1024 -kernel vmlinuz
 ```
 
 **This vmlinuz contians initramfs, so you can execute it directly using QEMU.**
-
 
 ## Copyright
 
