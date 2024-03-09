@@ -61,7 +61,7 @@ jobs:
     - name: Collect dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install gcc xz-utils gawk grub2 make grep kpartx qemu-utils sed util-linux wget python3-pillow -y
+        sudo apt-get install gcc cpio xz-utils gawk grub2 make grep kpartx qemu-utils sed util-linux wget python3-pillow -y
         sudo apt-get install binutils libelf-dev libssl-dev bc flex bison -y
     
     - name: Setup Python
