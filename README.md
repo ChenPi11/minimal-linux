@@ -1,3 +1,15 @@
+# DEPRECATED! DEPRECATED! DEPRECATED!
+
+## minimal-linux is merged into the MLinux project, https://github.com/mlinux-project/minimal is the latest repo.
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
 # MinimalLinux - Minimal Linux filesystem
 
 ## Dependencies
